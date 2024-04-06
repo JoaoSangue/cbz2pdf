@@ -8,19 +8,26 @@ if ! command -v img2pdf &> /dev/null; then
 fi
 
 if [ "$#" -lt 1 ]; then
-	echo "Illegal number of parameters"
+	echo "Illegal number of arguments"
+	echo "Requested arguments: <input file> [author] [title]"
 	exit 1
 fi
 
-CBZ=$1
-if [ ! -r "${CBZ}" ]; then
+ARCHIVE=$1
+if [ ! -r "${ARCHIVE}" ]; then
 	echo "Invalid input file"
 	exit 1
 fi
 
-if [[ ! "$CBZ" == *.cbz ]]; then
-    echo "Not a CBZ file"
-    exit 1
+if [[ "$ARCHIVE" == *.cbz ]]; then
+	FORMAT=".cbz"
+elif [[ "$ARCHIVE" == *.cbt ]]; then
+	FORMAT=".cbt"
+elif [[ "$ARCHIVE" == *.cb7 ]]; then
+	FORMAT=".cb7"
+else
+	echo "Supported formats are CBZ, CBT, and CB7."
+	exit 1
 fi
 
 echo "Creating work directory…"
@@ -34,11 +41,11 @@ function cleanup {
 # register the cleanup function to be called on the EXIT signal
 trap cleanup EXIT
 
-echo "Extracting CBZ file to work directory…"
-tar xf "$CBZ" -C "$EXTRACT_DIR"
+echo "Extracting archive to work directory…"
+tar xf "$ARCHIVE" -C "$EXTRACT_DIR"
 
-DIRNAME=$(dirname "$CBZ")
-FNAME_NO_EXT=$(basename "$CBZ" .cbz)
+DIRNAME=$(dirname "$ARCHIVE")
+FNAME_NO_EXT=$(basename "$ARCHIVE" "$FORMAT")
 AUTHOR=${2:-""}
 TITLE=${3:-$FNAME_NO_EXT}
 
