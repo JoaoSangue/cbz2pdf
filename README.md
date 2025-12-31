@@ -19,7 +19,7 @@ The author and title metadata is used by readers such as Apple Books.
 ### To convert a single file
 
 ```sh
-cbz2pdf "input.pdf" "The Author" "A Descriptive Title"
+cbz2pdf "input.cbz" "The Author" "A Descriptive Title"
 ```
 
 ### To convert multiple files at once
