@@ -7,6 +7,16 @@ if ! command -v img2pdf &> /dev/null; then
 	exit 1
 fi
 
+if ! command -v unzip &> /dev/null; then
+	echo "unzip is not installed or not in your PATH!"
+	exit 1
+fi
+
+if ! command -v unrar &> /dev/null; then
+	echo "unrar is not installed or not in your PATH!"
+	exit 1
+fi
+
 if [ "$#" -lt 1 ]; then
 	echo "Illegal number of arguments"
 	echo "Requested arguments: <input file> [author] [title]"
@@ -42,7 +52,17 @@ function cleanup {
 trap cleanup EXIT
 
 echo "Extracting archive to work directory…"
-tar xf "$ARCHIVE" -C "$EXTRACT_DIR"
+case "$file" in
+    *.tar)
+        tar xf "$ARCHIVE" -C "$EXTRACT_DIR"
+        ;;
+    *.rar|*.cbr)
+        unrar e "$file" "$TMP_FOLDER"
+        ;;
+    *.zip|*.cbz)
+        unzip -j "$file" -d "$TMP_FOLDER"
+        ;;
+esac
 
 DIRNAME=$(dirname "$ARCHIVE")
 FNAME_NO_EXT=$(basename "$ARCHIVE" "$FORMAT")
